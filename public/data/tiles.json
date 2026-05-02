@@ -1,0 +1,122 @@
+[
+  {
+    "id": "tile_001",
+    "title": "Ceramic Blue Tile",
+    "description": "Premium ceramic tile with blue glaze finish",
+    "image": "",
+    "category": "ceramic",
+    "price": 45.99,
+    "currency": "USD",
+    "dimensions": "60x60 cm",
+    "material": "Ceramic",
+    "inStock": true
+  },
+  {
+    "id": "tile_002",
+    "title": "Marble White Elegance",
+    "description": "Luxury white marble tile for modern interiors",
+    "image": "",
+    "category": "marble",
+    "price": 89.5,
+    "currency": "USD",
+    "dimensions": "80x80 cm",
+    "material": "Marble",
+    "inStock": true
+  },
+  {
+    "id": "tile_003",
+    "title": "Wood Pattern Tile",
+    "description": "Natural wood texture ceramic tile",
+    "image": "",
+    "category": "wood",
+    "price": 39.99,
+    "currency": "USD",
+    "dimensions": "60x60 cm",
+    "material": "Ceramic",
+    "inStock": true
+  },
+  {
+    "id": "tile_004",
+    "title": "Geometric Black Tile",
+    "description": "Modern geometric pattern in black finish",
+    "image": "",
+    "category": "modern",
+    "price": 55.0,
+    "currency": "USD",
+    "dimensions": "60x60 cm",
+    "material": "Porcelain",
+    "inStock": false
+  },
+  {
+    "id": "tile_005",
+    "title": "Vintage Brown Tile",
+    "description": "Classic vintage style brown tile",
+    "image": "",
+    "category": "vintage",
+    "price": 42.75,
+    "currency": "USD",
+    "dimensions": "50x50 cm",
+    "material": "Ceramic",
+    "inStock": true
+  },
+  {
+    "id": "tile_006",
+    "title": "Luxury Gold Tile",
+    "description": "Premium gold finish decorative tile",
+    "image": "",
+    "category": "luxury",
+    "price": 120.0,
+    "currency": "USD",
+    "dimensions": "60x60 cm",
+    "material": "Porcelain",
+    "inStock": true
+  },
+  {
+    "id": "tile_007",
+    "title": "Minimal Grey Tile",
+    "description": "Simple and elegant grey matte tile",
+    "image": "",
+    "category": "minimal",
+    "price": 35.0,
+    "currency": "USD",
+    "dimensions": "60x60 cm",
+    "material": "Ceramic",
+    "inStock": true
+  },
+  {
+    "id": "tile_008",
+    "title": "Ocean Wave Tile",
+    "description": "Blue ocean wave inspired design tile",
+    "image": "",
+    "category": "artistic",
+    "price": 60.25,
+    "currency": "USD",
+    "dimensions": "70x70 cm",
+    "material": "Porcelain",
+    "inStock": true
+  },
+  {
+    "id": "tile_009",
+    "title": "Brick Style Tile",
+    "description": "Rustic brick wall style tile",
+    "image": "",
+    "category": "rustic",
+    "price": 48.0,
+    "currency": "USD",
+    "dimensions": "60x30 cm",
+    "material": "Clay",
+    "inStock": false
+  },
+  {
+    "id": "tile_010",
+    "title": "Modern White Matte",
+    "description": "Clean white matte finish tile for modern homes",
+    "image": "",
+    "category": "modern",
+    "price": 50.0,
+    "currency": "USD",
+    "dimensions": "60x60 cm",
+    "material": "Ceramic",
+    "inStock": true
+  }
+]

@@ -9,10 +9,14 @@ export default function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
-    fetch("/api/auth/session")
-      .then((res) => res.json())
-      .then((data) => setUser(data?.user));
-  }, []);
+  fetch("/api/auth/session")
+    .then((res) => {
+      if (!res.ok) return null;
+      return res.json();
+    })
+    .then((data) => setUser(data?.user || null))
+    .catch(() => setUser(null));
+}, []);
 
   const handleLogout = async () => {
     await fetch("/api/auth/sign-out", { method: "POST" });

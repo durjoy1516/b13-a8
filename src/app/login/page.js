@@ -11,78 +11,57 @@ export default function Login() {
   const [show, setShow] = useState(false);
   const router = useRouter();
 
-  // const handleLogin = async (e) => {
-  //   e.preventDefault();
-
-  //   // validation
-  //   if (!email) {
-  //     return toast.error("Email is required");
-  //   }
-
-  //   if (password.length < 6) {
-  //     return toast.error("Password must be at least 6 characters");
-  //   }
-
-  //   const res = await fetch("/api/auth/sign-in/email", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({ email, password }),
-  //   });
-
-  //   const data = await res.json();
-
-  //   if (res.ok) {
-  //     toast.success("Login Successful!");
-  //     router.push("/");
-  //   } else {
-  //     toast.error(data?.message || "Login Failed");
-  //   }
-  // };
   const handleLogin = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!email) return toast.error("Email required");
-  if (password.length < 6)
-    return toast.error("Password must be 6+ chars");
+    if (!email) return toast.error("Email required");
+    if (password.length < 6)
+      return toast.error("Password must be 6+ chars");
 
-  try {
-    const res = await fetch("/api/auth/sign-in/email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const res = await fetch("/api/auth/sign-in/email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+        credentials: "include",
+      });
 
-    const text = await res.text();
-    const data = text ? JSON.parse(text) : {};
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : {};
 
-    if (res.ok) {
-      toast.success("Login Successful!");
-      router.push("/");
-    } else {
-      toast.error(data?.message || "Login Failed");
+      if (res.ok) {
+        toast.success("Login Successful!");
+
+        router.push("/");
+        setTimeout(() => {
+        router.refresh();
+        }, 100);
+      } else {
+        toast.error(data?.message || "Login Failed");
+      }
+    } catch (err) {
+      toast.error("Server error");
     }
-  } catch (err) {
-    toast.error("Server error");
-  }
-};
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+
       <form
         onSubmit={handleLogin}
         className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md"
       >
         <h2 className="text-2xl font-bold mb-6 text-center">
-          Login to Your Account
+          Login
         </h2>
 
         {/* Email */}
         <input
           type="email"
-          placeholder="Enter your email"
-          className="w-full border px-4 py-2 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Email"
+          className="w-full border px-4 py-2 rounded-lg mb-3"
           onChange={(e) => setEmail(e.target.value)}
         />
 
@@ -90,35 +69,27 @@ export default function Login() {
         <div className="relative mb-3">
           <input
             type={show ? "text" : "password"}
-            placeholder="Enter your password"
-            className="w-full border px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Password"
+            className="w-full border px-4 py-2 rounded-lg"
             onChange={(e) => setPassword(e.target.value)}
           />
+
           <span
             onClick={() => setShow(!show)}
-            className="absolute right-3 top-2.5 text-sm cursor-pointer text-gray-500"
+            className="absolute right-3 top-2 text-sm cursor-pointer"
           >
             {show ? "Hide" : "Show"}
           </span>
         </div>
 
-        {/* Login Button */}
-        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+        {/* Button */}
+        <button className="w-full bg-blue-600 text-white py-2 rounded-lg">
           Login
         </button>
 
-        {/* Google Login (placeholder) */}
-        <button
-          type="button"
-          className="w-full mt-3 border py-2 rounded-lg hover:bg-gray-100"
-        >
-          Continue with Google
-        </button>
-
-        {/* Register Link */}
         <p className="text-sm text-center mt-4">
-          Don’t have an account?{" "}
-          <Link href="/register" className="text-blue-600 font-semibold">
+          No account?{" "}
+          <Link href="/register" className="text-blue-600">
             Register
           </Link>
         </p>

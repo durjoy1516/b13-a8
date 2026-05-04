@@ -8,69 +8,105 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  useEffect(() => {
-  fetch("/api/auth/session")
-    .then((res) => {
-      if (!res.ok) return null;
-      return res.json();
-    })
-    .then((data) => setUser(data?.user || null))
-    .catch(() => setUser(null));
-}, []);
+  // 🔥 GET USER (SAFE + NO CACHE + NO GHOST LOGIN)
+  const loadUser = async () => {
+    try {
+      const res = await fetch("/api/auth/get-session", {
+        credentials: "include",
+        cache: "no-store",
+      });
 
-  const handleLogout = async () => {
-    await fetch("/api/auth/sign-out", { method: "POST" });
-    setUser(null);
-    window.location.reload();
+      if (!res.ok) {
+        setUser(null);
+        return;
+      }
+
+      const data = await res.json();
+
+      // 🔥 STRICT CHECK
+      if (!data?.user || !data?.session) {
+        setUser(null);
+        return;
+      }
+
+      setUser(data.user);
+    } catch {
+      setUser(null);
+    }
   };
 
+  // 🔥 RUN ONCE ONLY
+  useEffect(() => {
+    loadUser();
+  }, []);
+
+  // 🔥 LOGOUT (FULL FIXED)
+ const handleLogout = async () => {
+  try {
+    await fetch("/api/auth/sign-out", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    setUser(null); // UI instantly clear
+
+    window.location.href = "/login"; // 🔥 hard redirect
+  } catch (err) {
+    console.log(err);
+  }
+};
+
   return (
-    <nav className="sticky top-0 z-50 bg-white border-b shadow-sm">
+    <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b shadow-sm">
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
 
-        {/* Logo */}
+        {/* LOGO */}
         <Link href="/" className="text-xl font-bold text-blue-600">
           TilesGallery
         </Link>
 
-        {/* Desktop Menu */}
+        {/* MENU */}
         <div className="hidden md:flex gap-6 text-sm text-gray-700">
-          <Link href="/" className="hover:text-blue-600">Home</Link>
-          <Link href="/all-tiles" className="hover:text-blue-600">All Tiles</Link>
-          <Link href="/my-profile" className="hover:text-blue-600">My Profile</Link>
+          <Link href="/">Home</Link>
+          <Link href="/all-tiles">All Tiles</Link>
+          {user && <Link href="/my-profile">My Profile</Link>}
         </div>
 
-        {/* Right Side */}
+        {/* RIGHT SIDE */}
         <div className="flex items-center gap-3">
 
-          {/* Desktop Auth */}
+          {/* NOT LOGGED IN */}
           {!user ? (
             <Link
               href="/login"
-              className="hidden md:block px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
               Login
             </Link>
           ) : (
-            <div className="relative hidden md:block">
+            <div className="relative">
               <img
-                onClick={() => setDropdownOpen(!dropdownOpen)}
                 src={user?.image || "/profile.png"}
+                alt="user"
                 className="w-9 h-9 rounded-full cursor-pointer border"
+                onClick={() => setDropdownOpen(!dropdownOpen)}
               />
 
-              {/* Dropdown */}
+              {/* DROPDOWN */}
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-md">
+                <div className="absolute right-0 mt-2 w-44 bg-white border rounded-xl shadow-lg overflow-hidden">
+
                   <Link
                     href="/my-profile"
                     className="block px-4 py-2 hover:bg-gray-100"
+                    onClick={() => setDropdownOpen(false)}
                   >
-                    Profile
+                    My Profile
                   </Link>
+
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                    className="w-full text-left px-4 py-2 text-red-500 hover:bg-red-50"
                   >
                     Logout
                   </button>
@@ -79,7 +115,7 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* Mobile Menu Button */}
+          {/* MOBILE BUTTON */}
           <button
             className="md:hidden text-2xl"
             onClick={() => setMenuOpen(!menuOpen)}
@@ -89,26 +125,35 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* MOBILE MENU */}
       {menuOpen && (
-        <div className="md:hidden bg-white border-t px-6 py-4 space-y-3">
-          <Link href="/" className="block">Home</Link>
-          <Link href="/all-tiles" className="block">All Tiles</Link>
-          <Link href="/my-profile" className="block">My Profile</Link>
+        <div className="md:hidden px-6 py-4 border-t space-y-3">
+
+          <Link href="/" onClick={() => setMenuOpen(false)}>
+            Home
+          </Link>
+
+          <Link href="/all-tiles" onClick={() => setMenuOpen(false)}>
+            All Tiles
+          </Link>
+
+          {user && (
+            <Link href="/my-profile" onClick={() => setMenuOpen(false)}>
+              My Profile
+            </Link>
+          )}
 
           {!user ? (
-            <Link href="/login" className="block text-blue-600 font-semibold">
+            <Link href="/login" className="text-blue-600">
               Login
             </Link>
           ) : (
-            <>
-              <Link href="/my-profile" className="block">
-                Profile
-              </Link>
-              <button onClick={handleLogout} className="block text-left w-full">
-                Logout
-              </button>
-            </>
+            <button
+              onClick={handleLogout}
+              className="text-red-500"
+            >
+              Logout
+            </button>
           )}
         </div>
       )}

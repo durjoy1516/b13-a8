@@ -34,6 +34,7 @@ export default function Register() {
         password,
         image: photo,
       }),
+      credentials: "include",
     });
 
     const text = await res.text();

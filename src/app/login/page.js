@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { authClient } from "@/lib/auth-client";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -46,6 +47,12 @@ export default function Login() {
     }
   };
 
+  const handleGoogleSignin = async () => {
+    await authClient.signIn.social({
+      provider: 'google'
+    })
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <form
@@ -83,6 +90,14 @@ export default function Login() {
           Login
         </button>
 
+
+        <button
+  type="button"
+  onClick={handleGoogleSignin}
+  className="w-full mt-3 border py-2 rounded-lg hover:bg-gray-100 transition"
+>
+  Continue with Google
+</button>
         <p className="text-sm text-center mt-4">
           No account?{" "}
           <Link href="/register" className="text-blue-600">

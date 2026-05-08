@@ -62,6 +62,7 @@ export default function Register() {
         </h2>
 
         {/* Name */}
+        <h4>Your Name: <span className="text-red-600">*</span></h4>
         <input
           type="text"
           placeholder="Full Name"
@@ -70,6 +71,7 @@ export default function Register() {
         />
 
         {/* Photo URL */}
+        <h4>Your Photo:</h4>
         <input
           type="text"
           placeholder="Photo URL"
@@ -78,6 +80,7 @@ export default function Register() {
         />
 
         {/* Email */}
+        <h4>Your Email Address: <span className="text-red-600">*</span></h4>
         <input
           type="email"
           placeholder="Email"
@@ -86,6 +89,7 @@ export default function Register() {
         />
 
         {/* Password */}
+        <h4>Create a Password: <span className="text-red-600">*</span></h4>
         <div className="relative mb-3">
           <input
             type={show ? "text" : "password"}

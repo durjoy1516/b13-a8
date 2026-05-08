@@ -42,7 +42,7 @@ useEffect(() => {
       <div className="flex justify-end">
   <Link href="/all-tiles">
     <button className="mt-6 font-bold cursor-pointer hover:text-blue-700 transition">
-      See more...
+      Explore more...
     </button>
   </Link>
 </div>

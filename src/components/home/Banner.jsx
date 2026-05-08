@@ -7,7 +7,7 @@ export default function Banner() {
     <div
       className="relative h-[70vh] flex items-center justify-center text-center text-white"
       style={{
-        backgroundImage: "url('/images/tiles/banner.jpg')",
+        backgroundImage: "url('/images/banner.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}

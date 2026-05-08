@@ -8,74 +8,70 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  // 🔥 GET USER (SAFE + NO CACHE + NO GHOST LOGIN)
+  // 🔥 LOAD USER
   const loadUser = async () => {
-    try {
-      const res = await fetch("/api/auth/get-session", {
-        credentials: "include",
-        cache: "no-store",
-      });
+  try {
+    const res = await fetch("/api/auth/get-session", {
+      credentials: "include",
+      cache: "no-store",
+    });
 
-      if (!res.ok) {
-        setUser(null);
-        return;
-      }
+    const text = await res.text();
+    const data = text ? JSON.parse(text) : null;
 
-      const data = await res.json();
+    setUser(data?.user || null);
+  } catch {
+    setUser(null);
+  }
+};
 
-      // 🔥 STRICT CHECK
-      if (!data?.user || !data?.session) {
-        setUser(null);
-        return;
-      }
+  useEffect(() => {
+  loadUser();
 
-      setUser(data.user);
-    } catch {
-      setUser(null);
-    }
+  const handleAuthChange = () => {
+    loadUser(); // refresh session
   };
 
-  // 🔥 RUN ONCE ONLY
-  useEffect(() => {
-    loadUser();
-  }, []);
+  window.addEventListener("authChanged", handleAuthChange);
 
-  // 🔥 LOGOUT (FULL FIXED)
- const handleLogout = async () => {
-  try {
+  // 🔥 extra safety (focus tab e login detect)
+  window.addEventListener("focus", handleAuthChange);
+
+  return () => {
+    window.removeEventListener("authChanged", handleAuthChange);
+    window.removeEventListener("focus", handleAuthChange);
+  };
+}, []);
+
+  // 🔥 LOGOUT
+  const handleLogout = async () => {
     await fetch("/api/auth/sign-out", {
       method: "POST",
       credentials: "include",
     });
 
-    setUser(null); // UI instantly clear
+    setUser(null);
 
-    window.location.href = "/login"; // 🔥 hard redirect
-  } catch (err) {
-    console.log(err);
-  }
-};
+    // 🔥 IMPORTANT
+    window.dispatchEvent(new Event("authChanged"));
+  };
 
   return (
     <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b shadow-sm">
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
 
-        {/* LOGO */}
         <Link href="/" className="text-xl font-bold text-blue-600">
           TilesGallery
         </Link>
 
-        {/* MENU */}
         <div className="hidden md:flex gap-6 text-sm text-gray-700">
           <Link href="/">Home</Link>
           <Link href="/all-tiles">All Tiles</Link>
           {user && <Link href="/my-profile">My Profile</Link>}
         </div>
 
-        {/* RIGHT SIDE */}
         <div className="flex items-center gap-3">
 
-          {/* NOT LOGGED IN */}
           {!user ? (
             <Link
               href="/login"
@@ -92,7 +88,6 @@ export default function Navbar() {
                 onClick={() => setDropdownOpen(!dropdownOpen)}
               />
 
-              {/* DROPDOWN */}
               {dropdownOpen && (
                 <div className="absolute right-0 mt-2 w-44 bg-white border rounded-xl shadow-lg overflow-hidden">
 
@@ -115,7 +110,6 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* MOBILE BUTTON */}
           <button
             className="md:hidden text-2xl"
             onClick={() => setMenuOpen(!menuOpen)}
@@ -125,17 +119,10 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* MOBILE MENU */}
       {menuOpen && (
         <div className="md:hidden px-6 py-4 border-t space-y-3">
-
-          <Link href="/" onClick={() => setMenuOpen(false)}>
-            Home
-          </Link>
-
-          <Link href="/all-tiles" onClick={() => setMenuOpen(false)}>
-            All Tiles
-          </Link>
+          <Link href="/" onClick={() => setMenuOpen(false)}>Home</Link>
+          <Link href="/all-tiles" onClick={() => setMenuOpen(false)}>All Tiles</Link>
 
           {user && (
             <Link href="/my-profile" onClick={() => setMenuOpen(false)}>
@@ -144,14 +131,9 @@ export default function Navbar() {
           )}
 
           {!user ? (
-            <Link href="/login" className="text-blue-600">
-              Login
-            </Link>
+            <Link href="/login" className="text-blue-600">Login</Link>
           ) : (
-            <button
-              onClick={handleLogout}
-              className="text-red-500"
-            >
+            <button onClick={handleLogout} className="text-red-500">
               Logout
             </button>
           )}

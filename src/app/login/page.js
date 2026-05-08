@@ -34,10 +34,10 @@ export default function Login() {
       if (res.ok) {
         toast.success("Login Successful!");
 
+        // 🔥 MAIN FIX
+        window.dispatchEvent(new Event("authChanged"));
+
         router.push("/");
-        setTimeout(() => {
-        router.refresh();
-        }, 100);
       } else {
         toast.error(data?.message || "Login Failed");
       }
@@ -48,7 +48,6 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-
       <form
         onSubmit={handleLogin}
         className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md"
@@ -57,7 +56,6 @@ export default function Login() {
           Login
         </h2>
 
-        {/* Email */}
         <input
           type="email"
           placeholder="Email"
@@ -65,7 +63,6 @@ export default function Login() {
           onChange={(e) => setEmail(e.target.value)}
         />
 
-        {/* Password */}
         <div className="relative mb-3">
           <input
             type={show ? "text" : "password"}
@@ -82,7 +79,6 @@ export default function Login() {
           </span>
         </div>
 
-        {/* Button */}
         <button className="w-full bg-blue-600 text-white py-2 rounded-lg">
           Login
         </button>

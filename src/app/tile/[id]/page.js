@@ -1,47 +1,70 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function TileDetailsPage() {
   const { id } = useParams();
-  const router = useRouter();
 
   const [tile, setTile] = useState(null);
-  const [user, setUser] = useState(null);
+
+  // 🔥 IMPORTANT FIX
+  const [user, setUser] = useState(undefined);
+
   const [loading, setLoading] = useState(true);
 
-  // 1️⃣ CHECK LOGIN
+  // ✅ CHECK LOGIN
   useEffect(() => {
-    fetch("/api/auth/session")
-      .then((res) => res.json())
-      .then((data) => {
+    const checkUser = async () => {
+      try {
+        const res = await fetch("/api/auth/get-session", {
+          credentials: "include",
+          cache: "no-store",
+        });
+
+        const text = await res.text();
+        const data = text ? JSON.parse(text) : null;
+
         if (!data?.user) {
           setUser(null);
         } else {
           setUser(data.user);
         }
-      });
+      } catch {
+        setUser(null);
+      }
+    };
+
+    checkUser();
   }, []);
 
-  // 2️⃣ FETCH TILE DATA
+  // ✅ FETCH TILE
   useEffect(() => {
     fetch("/data/tiles.json")
       .then((res) => res.json())
       .then((data) => {
         const found = data.find((t) => t.id === id);
+
         setTile(found);
         setLoading(false);
       });
   }, [id]);
 
-  // LOADING
-  if (loading) return <p className="p-10">Loading...</p>;
+  // 🔥 SHOW LOADING UNTIL BOTH READY
+  if (loading || user === undefined) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <p className="text-lg font-medium animate-pulse">
+          Loading...
+        </p>
+      </div>
+    );
+  }
 
-  // ❌ NOT LOGGED IN VIEW
-  if (!user) {
+  // ❌ NOT LOGGED IN
+  if (user === null) {
     return (
       <div className="h-screen flex flex-col items-center justify-center text-center">
         <h1 className="text-2xl font-bold text-red-500">
@@ -70,10 +93,10 @@ export default function TileDetailsPage() {
     );
   }
 
-  // ✅ FULL DETAILS PAGE
+  // ✅ DETAILS PAGE
   return (
     <div className="max-w-6xl mx-auto p-10 grid md:grid-cols-2 gap-10">
-      
+
       {/* IMAGE */}
       <div className="relative h-[400px] rounded-2xl overflow-hidden">
         <Image
@@ -86,23 +109,37 @@ export default function TileDetailsPage() {
 
       {/* INFO */}
       <div className="space-y-4">
-        <h1 className="text-3xl font-bold">{tile.title}</h1>
+        <h1 className="text-3xl font-bold">
+          {tile.title}
+        </h1>
 
-        <p className="text-gray-600">{tile.description}</p>
+        <p className="text-gray-600">
+          {tile.description}
+        </p>
 
-        {/* RATING */}
         <div className="text-yellow-500">
           ★★★★☆ <span className="text-gray-500">(4.3)</span>
         </div>
 
         <div className="bg-gray-50 p-4 rounded-lg space-y-2">
           <p><b>Material:</b> {tile.material}</p>
+
           <p><b>Dimensions:</b> {tile.dimensions}</p>
+
           <p><b>Category:</b> {tile.category}</p>
+
           <p>
             <b>Status:</b>{" "}
-            <span className={tile.inStock ? "text-green-600" : "text-red-500"}>
-              {tile.inStock ? "In Stock" : "Out of Stock"}
+            <span
+              className={
+                tile.inStock
+                  ? "text-green-600"
+                  : "text-red-500"
+              }
+            >
+              {tile.inStock
+                ? "In Stock"
+                : "Out of Stock"}
             </span>
           </p>
         </div>

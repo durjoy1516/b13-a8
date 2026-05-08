@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import TileCard from "@/components/TileCard";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function FeaturedTiles() {
   const [tiles, setTiles] = useState([]);
@@ -18,7 +19,7 @@ export default function FeaturedTiles() {
 
   // user session check
 useEffect(() => {
-  fetch("/api/auth/session")
+  fetch("/api/auth/get-session")
     .then((res) => {
       if (!res.ok) return null;
       return res.json();
@@ -38,6 +39,13 @@ useEffect(() => {
           <TileCard key={tile.id} tile={tile} user={user} />
         ))}
       </div>
+      <div className="flex justify-end">
+  <Link href="/all-tiles">
+    <button className="mt-6 font-bold cursor-pointer hover:text-blue-700 transition">
+      See more...
+    </button>
+  </Link>
+</div>
     </div>
   );
 }

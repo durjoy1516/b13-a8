@@ -1,47 +1,60 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
+  const pathname = usePathname();
+  const dropdownRef = useRef(null);
+
   // 🔥 LOAD USER
   const loadUser = async () => {
-  try {
-    const res = await fetch("/api/auth/get-session", {
-      credentials: "include",
-      cache: "no-store",
-    });
+    try {
+      const res = await fetch("/api/auth/get-session", {
+        credentials: "include",
+        cache: "no-store",
+      });
 
-    const text = await res.text();
-    const data = text ? JSON.parse(text) : null;
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : null;
 
-    setUser(data?.user || null);
-  } catch {
-    setUser(null);
-  }
-};
+      setUser(data?.user || null);
+    } catch {
+      setUser(null);
+    }
+  };
 
   useEffect(() => {
-  loadUser();
+    loadUser();
 
-  const handleAuthChange = () => {
-    loadUser(); // refresh session
-  };
+    const handleAuthChange = () => loadUser();
 
-  window.addEventListener("authChanged", handleAuthChange);
+    window.addEventListener("authChanged", handleAuthChange);
+    window.addEventListener("focus", handleAuthChange);
 
-  // 🔥 extra safety (focus tab e login detect)
-  window.addEventListener("focus", handleAuthChange);
+    // 🔥 outside click close dropdown
+    const handleClickOutside = (e) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target)
+      ) {
+        setDropdownOpen(false);
+      }
+    };
 
-  return () => {
-    window.removeEventListener("authChanged", handleAuthChange);
-    window.removeEventListener("focus", handleAuthChange);
-  };
-}, []);
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      window.removeEventListener("authChanged", handleAuthChange);
+      window.removeEventListener("focus", handleAuthChange);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // 🔥 LOGOUT
   const handleLogout = async () => {
@@ -51,8 +64,6 @@ export default function Navbar() {
     });
 
     setUser(null);
-
-    // 🔥 IMPORTANT
     window.dispatchEvent(new Event("authChanged"));
   };
 
@@ -60,32 +71,82 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b shadow-sm">
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
 
+        {/* LOGO */}
         <Link href="/" className="text-xl font-bold text-blue-600">
           TilesGallery
         </Link>
 
-        <div className="hidden md:flex gap-6 text-sm text-gray-700">
-          <Link href="/">Home</Link>
-          <Link href="/all-tiles">All Tiles</Link>
-          {user && <Link href="/my-profile">My Profile</Link>}
+        {/* NAV LINKS */}
+        <div className="hidden md:flex gap-3 text-sm font-medium">
+
+          <Link
+            href="/"
+            className={`px-4 py-2 rounded-lg ${
+              pathname === "/"
+                ? "bg-blue-100 text-blue-600"
+                : "text-gray-700 hover:bg-gray-100"
+            }`}
+          >
+            Home
+          </Link>
+
+          <Link
+            href="/all-tiles"
+            className={`px-4 py-2 rounded-lg ${
+              pathname === "/all-tiles"
+                ? "bg-blue-100 text-blue-600"
+                : "text-gray-700 hover:bg-gray-100"
+            }`}
+          >
+            All Tiles
+          </Link>
+
+          {user && (
+            <Link
+              href="/my-profile"
+              className={`px-4 py-2 rounded-lg ${
+                pathname === "/my-profile"
+                  ? "bg-blue-100 text-blue-600"
+                  : "text-gray-700 hover:bg-gray-100"
+              }`}
+            >
+              My Profile
+            </Link>
+          )}
         </div>
 
+        {/* RIGHT SIDE */}
         <div className="flex items-center gap-3">
 
+          {/* NOT LOGGED IN */}
           {!user ? (
-            <Link
-              href="/login"
-              className="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-              Login
-            </Link>
+            <div className="flex gap-6">
+
+              <Link
+                href="/login"
+                className=" px-5 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Login
+              </Link>
+
+              <Link
+                href="/register"
+                className="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Sign Up
+              </Link>
+
+            </div>
           ) : (
-            <div className="relative">
+            <div className="relative" ref={dropdownRef}>
               <img
-                src={user?.image || "/profile.png"}
+                src={user?.image?.trim() ? user.image : "/profile.png"}
                 alt="user"
-                className="w-9 h-9 rounded-full cursor-pointer border"
+                className="w-9 h-9 rounded-full cursor-pointer border object-cover"
                 onClick={() => setDropdownOpen(!dropdownOpen)}
+                onError={(e) => {
+                  e.target.src = "/profile.png";
+                }}
               />
 
               {dropdownOpen && (
@@ -110,6 +171,7 @@ export default function Navbar() {
             </div>
           )}
 
+          {/* MOBILE BUTTON */}
           <button
             className="md:hidden text-2xl"
             onClick={() => setMenuOpen(!menuOpen)}
@@ -119,10 +181,17 @@ export default function Navbar() {
         </div>
       </div>
 
+      {/* MOBILE MENU */}
       {menuOpen && (
         <div className="md:hidden px-6 py-4 border-t space-y-3">
-          <Link href="/" onClick={() => setMenuOpen(false)}>Home</Link>
-          <Link href="/all-tiles" onClick={() => setMenuOpen(false)}>All Tiles</Link>
+
+          <Link href="/" onClick={() => setMenuOpen(false)}>
+            Home
+          </Link>
+
+          <Link href="/all-tiles" onClick={() => setMenuOpen(false)}>
+            All Tiles
+          </Link>
 
           {user && (
             <Link href="/my-profile" onClick={() => setMenuOpen(false)}>
@@ -131,7 +200,17 @@ export default function Navbar() {
           )}
 
           {!user ? (
-            <Link href="/login" className="text-blue-600">Login</Link>
+            <div className="flex gap-3 pt-2">
+
+              <Link href="/login" className="px-4 py-2 bg-blue-600 text-white rounded-lg">
+                Login
+              </Link>
+
+              <Link href="/register" className="px-4 py-2 bg-blue-600 text-white rounded-lg">
+                Sign Up
+              </Link>
+
+            </div>
           ) : (
             <button onClick={handleLogout} className="text-red-500">
               Logout

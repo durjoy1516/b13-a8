@@ -182,42 +182,83 @@ export default function Navbar() {
       </div>
 
       {/* MOBILE MENU */}
-      {menuOpen && (
-        <div className="md:hidden px-6 py-4 border-t space-y-3">
+{menuOpen && (
+  <div className="md:hidden px-4 pb-4 animate-in slide-in-from-top duration-300">
 
-          <Link href="/" onClick={() => setMenuOpen(false)}>
-            Home
-          </Link>
+    <div className="bg-white border shadow-lg rounded-2xl p-3 mt-3 space-y-2">
 
-          <Link href="/all-tiles" onClick={() => setMenuOpen(false)}>
-            All Tiles
-          </Link>
+      <Link
+        href="/"
+        onClick={() => setMenuOpen(false)}
+        className={`block px-4 py-3 rounded-xl transition font-medium ${
+          pathname === "/"
+            ? "bg-blue-100 text-blue-600"
+            : "text-gray-700 hover:bg-gray-100"
+        }`}
+      >
+        Home
+      </Link>
 
-          {user && (
-            <Link href="/my-profile" onClick={() => setMenuOpen(false)}>
-              My Profile
-            </Link>
-          )}
+      <Link
+        href="/all-tiles"
+        onClick={() => setMenuOpen(false)}
+        className={`block px-4 py-3 rounded-xl transition font-medium ${
+          pathname === "/all-tiles"
+            ? "bg-blue-100 text-blue-600"
+            : "text-gray-700 hover:bg-gray-100"
+        }`}
+      >
+        All Tiles
+      </Link>
 
-          {!user ? (
-            <div className="flex gap-3 pt-2">
-
-              <Link href="/login" className="px-4 py-2 bg-blue-600 text-white rounded-lg">
-                Login
-              </Link>
-
-              <Link href="/register" className="px-4 py-2 bg-blue-600 text-white rounded-lg">
-                Sign Up
-              </Link>
-
-            </div>
-          ) : (
-            <button onClick={handleLogout} className="text-red-500">
-              Logout
-            </button>
-          )}
-        </div>
+      {user && (
+        <Link
+          href="/my-profile"
+          onClick={() => setMenuOpen(false)}
+          className={`block px-4 py-3 rounded-xl transition font-medium ${
+            pathname === "/my-profile"
+              ? "bg-blue-100 text-blue-600"
+              : "text-gray-700 hover:bg-gray-100"
+          }`}
+        >
+          My Profile
+        </Link>
       )}
+
+      {!user ? (
+        <div className="flex flex-col gap-2 pt-3">
+
+          <Link
+            href="/login"
+            onClick={() => setMenuOpen(false)}
+            className="w-full text-center px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition duration-300 font-medium shadow-sm hover:shadow-md"
+          >
+            Login
+          </Link>
+
+          <Link
+            href="/register"
+            onClick={() => setMenuOpen(false)}
+            className="w-full text-center px-4 py-3 border border-blue-600 text-blue-600 rounded-xl hover:bg-blue-50 transition duration-300 font-medium"
+          >
+            Sign Up
+          </Link>
+
+        </div>
+      ) : (
+        <button
+          onClick={() => {
+            handleLogout();
+            setMenuOpen(false);
+          }}
+          className="w-full mt-2 px-4 py-3 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition duration-300 font-medium text-left"
+        >
+          Logout
+        </button>
+      )}
+    </div>
+  </div>
+)}
     </nav>
   );
 }

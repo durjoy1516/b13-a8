@@ -51,7 +51,7 @@ export default function Profile() {
       <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-lg overflow-hidden">
 
         {/* COVER */}
-        <div className="h-40 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+        <div className="h-40 bg-gradient-to-tr from-blue-500 to-[#101828]"></div>
 
         {/* PROFILE */}
         <div className="px-8 pb-10 relative">

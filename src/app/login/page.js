@@ -5,13 +5,17 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
+import { FaGoogle } from "react-icons/fa";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
 
-  // 🔥 ERRORS
+  // 🔥 LOADING
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
+
   const [errors, setErrors] = useState({});
 
   const router = useRouter();
@@ -37,6 +41,8 @@ export default function Login() {
     if (Object.keys(newErrors).length > 0) return;
 
     try {
+      setLoginLoading(true);
+
       const res = await fetch("/api/auth/sign-in/email", {
         method: "POST",
         headers: {
@@ -60,14 +66,23 @@ export default function Login() {
       }
     } catch (err) {
       toast.error("Server error");
+    } finally {
+      setLoginLoading(false);
     }
   };
 
   // 🔥 GOOGLE
   const handleGoogleSignin = async () => {
-    await authClient.signIn.social({
-      provider: "google",
-    });
+    try {
+      setGoogleLoading(true);
+
+      await authClient.signIn.social({
+        provider: "google",
+      });
+    } catch (err) {
+      toast.error("Google Login Failed");
+      setGoogleLoading(false);
+    }
   };
 
   return (
@@ -160,9 +175,17 @@ export default function Login() {
         {/* LOGIN BUTTON */}
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2.5 rounded-xl hover:bg-blue-700 transition font-medium shadow-sm"
+          disabled={loginLoading}
+          className="w-full bg-blue-600 text-white py-2.5 rounded-xl hover:bg-blue-700 hover:shadow-lg transition duration-300 font-medium shadow-sm disabled:opacity-70"
         >
-          Login
+          {loginLoading ? (
+            <span className="flex items-center justify-center gap-2">
+              <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              Logging in...
+            </span>
+          ) : (
+            "Login"
+          )}
         </button>
 
         {/* DIVIDER */}
@@ -176,9 +199,20 @@ export default function Login() {
         <button
           type="button"
           onClick={handleGoogleSignin}
-          className="w-full border py-2.5 rounded-xl hover:bg-gray-50 transition font-medium"
+          disabled={googleLoading}
+          className="w-full border py-2.5 rounded-xl hover:bg-gray-50 hover:shadow-md transition duration-300 font-medium flex items-center justify-center gap-3 disabled:opacity-70"
         >
-          Continue with Google
+          {googleLoading ? (
+            <>
+              <span className="w-5 h-5 border-2 border-gray-500 border-t-transparent rounded-full animate-spin"></span>
+              Redirecting...
+            </>
+          ) : (
+            <>
+              <FaGoogle className="text-blue-500 text-lg" />
+              Continue with Google
+            </>
+          )}
         </button>
 
         {/* REGISTER LINK */}

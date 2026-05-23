@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
+import { FaGoogle } from "react-icons/fa";
 
 export default function Register() {
   const [name, setName] = useState("");
@@ -12,6 +13,9 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
+
+  // 🔥 GOOGLE LOADING
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   // 🔥 ERRORS
   const [errors, setErrors] = useState({});
@@ -73,9 +77,16 @@ export default function Register() {
 
   // 🔥 GOOGLE LOGIN
   const handleGoogleSignin = async () => {
-    await authClient.signIn.social({
-      provider: "google",
-    });
+    try {
+      setGoogleLoading(true);
+
+      await authClient.signIn.social({
+        provider: "google",
+      });
+    } catch (err) {
+      toast.error("Google Login Failed");
+      setGoogleLoading(false);
+    }
   };
 
   return (
@@ -231,9 +242,20 @@ export default function Register() {
         <button
           type="button"
           onClick={handleGoogleSignin}
-          className="w-full border py-2.5 rounded-xl hover:bg-gray-50 transition font-medium"
+          disabled={googleLoading}
+          className="w-full border py-2.5 rounded-xl hover:bg-gray-50 hover:shadow-md transition duration-300 font-medium flex items-center justify-center gap-3 disabled:opacity-70"
         >
-          Continue with Google
+          {googleLoading ? (
+            <>
+              <span className="w-5 h-5 border-2 border-gray-500 border-t-transparent rounded-full animate-spin"></span>
+              Redirecting...
+            </>
+          ) : (
+            <>
+              <FaGoogle className="text-blue-500 text-lg" />
+              Continue with Google
+            </>
+          )}
         </button>
 
         {/* LOGIN LINK */}

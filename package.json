@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@better-auth/mongo-adapter": "^1.6.9",
+    "@fortawesome/fontawesome-free": "^7.2.0",
     "@heroui/react": "^3.0.3",
     "@heroui/styles": "^3.0.3",
     "@nextui-org/react": "^2.6.11",

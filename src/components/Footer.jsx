@@ -5,10 +5,10 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300 mt-16">
-      <div className="max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-4 gap-8">
+      <div className="max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-4 gap-8 ">
 
         {/* 🔹 About */}
-        <div>
+        <div className="ml-4">
           <h2 className="text-xl font-bold text-white mb-4">
             TilesGallery
           </h2>
@@ -19,7 +19,7 @@ export default function Footer() {
         </div>
 
         {/* 🔹 Quick Links */}
-        <div>
+        <div className=" pl-18">
           <h3 className="text-lg font-semibold text-white mb-4">
             Quick Links
           </h3>
@@ -65,7 +65,7 @@ export default function Footer() {
       </div>
 
       {/* 🔻 Bottom */}
-      <div className="border-t border-gray-700 text-center py-4 text-sm">
+      <div className="border-t border-gray-700 text-center p-4 text-sm">
         © {new Date().getFullYear()} TilesGallery. All rights reserved.
       </div>
     </footer>
